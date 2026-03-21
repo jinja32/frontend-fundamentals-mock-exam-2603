@@ -2,10 +2,10 @@ import { css } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { Top, Spacing, Border, FixedBottomCTA } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
-import { MessageBanner } from 'pages/RoomBookingPage/components/MessageBanner';
-import { ReservationList } from 'pages/RoomBookingPage/components/ReservationList';
-import { ReservationStatusTimeline } from 'pages/RoomBookingPage/components/ReservationStatusTimeline';
-import { ReservationStatusDatePicker } from 'pages/RoomBookingPage/components/ReservationStatusDatePicker';
+import { MessageBanner } from 'pages/ReservationStatusPage/components/MessageBanner';
+import { ReservationList } from 'pages/ReservationStatusPage/components/ReservationList';
+import { ReservationStatusTimeline } from 'pages/ReservationStatusPage/components/ReservationStatusTimeline';
+import { ReservationStatusDatePicker } from 'pages/ReservationStatusPage/components/ReservationStatusDatePicker';
 
 export function ReservationStatusPage() {
   const navigate = useNavigate();
