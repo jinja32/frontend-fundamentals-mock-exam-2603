@@ -1,27 +1,11 @@
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { Spacing, Text } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
-
-function formatDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
+import { formatDate } from 'utils/date';
+import { useReservationDateString } from '../hooks/useReservationDateString';
 
 export function ReservationStatusDatePicker() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const [date, setDate] = useState(searchParams.get('date') || formatDate(new Date()));
-
-  // URL 쿼리 파라미터 동기화
-  useEffect(() => {
-    const params: Record<string, string> = {};
-    if (date) params.date = date;
-    setSearchParams(params, { replace: true });
-  }, [date, setSearchParams]);
+  const [dateString, setDateString] = useReservationDateString();
 
   return (
     <div
@@ -42,9 +26,9 @@ export function ReservationStatusDatePicker() {
       >
         <input
           type="date"
-          value={date}
+          value={dateString}
           min={formatDate(new Date())}
-          onChange={e => setDate(e.target.value)}
+          onChange={e => setDateString(e.target.value)}
           aria-label="날짜"
           css={css`
             box-sizing: border-box;

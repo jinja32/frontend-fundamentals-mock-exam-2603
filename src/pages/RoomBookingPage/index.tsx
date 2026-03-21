@@ -6,6 +6,7 @@ import { Top, Spacing, Border, Button, Text, Select, ListRow } from '_tosslib/co
 import { colors } from '_tosslib/constants/colors';
 import { getRooms, getReservations, createReservation } from 'pages/remotes';
 import axios from 'axios';
+import { formatDate } from 'utils/date';
 
 const EQUIPMENT_LABELS: Record<string, string> = {
   tv: 'TV',
@@ -22,13 +23,6 @@ for (let h = 9; h <= 20; h++) {
   if (h < 20) {
     TIME_SLOTS.push(`${String(h).padStart(2, '0')}:30`);
   }
-}
-
-function formatDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
 }
 
 export function RoomBookingPage() {

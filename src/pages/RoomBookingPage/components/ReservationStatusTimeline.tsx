@@ -1,10 +1,10 @@
 import { css } from '@emotion/react';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 import { Spacing, Text } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { getRooms, getReservations, Room } from 'pages/remotes';
 import { useQuery } from '@tanstack/react-query';
+import { useReservationDateString } from '../hooks/useReservationDateString';
 
 const EQUIPMENT_LABELS: Record<string, string> = {
   tv: 'TV',
@@ -26,31 +26,16 @@ const TIMELINE_START = 9;
 const TIMELINE_END = 20;
 const TOTAL_MINUTES = (TIMELINE_END - TIMELINE_START) * 60;
 
-function formatDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
 function timeToMinutes(time: string): number {
   const [h, m] = time.split(':').map(Number);
   return (h - TIMELINE_START) * 60 + m;
 }
 
 export function ReservationStatusTimeline() {
-  const [searchParams] = useSearchParams();
-
-  const [date, setDate] = useState(searchParams.get('date') || formatDate(new Date()));
+  const [dateString] = useReservationDateString();
   const [activeReservation, setActiveReservation] = useState<string | null>(null);
 
   const { data: rooms = [] } = useQuery(['rooms'], getRooms);
-
-  // URL 쿼리 파라미터 동기화
-  useEffect(() => {
-    const date = searchParams.get('date');
-    if (date) setDate(date);
-  }, [searchParams, setDate]);
 
   return (
     <div
@@ -78,7 +63,7 @@ export function ReservationStatusTimeline() {
           <TimelineRow
             key={room.id}
             room={room}
-            date={date}
+            date={dateString}
             isActive={activeReservation === room.id}
             setActiveReservation={setActiveReservation}
           />
