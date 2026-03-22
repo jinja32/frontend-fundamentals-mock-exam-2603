@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Spacing, Text, ListRow, FixedBottomCTA } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
@@ -13,6 +13,7 @@ import { validateReservationFilter, validateRoomByReservationFilter } from '../u
 export function ReservableRoomList() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { search } = useLocation();
 
   const [reservationFilter] = useReservationFilter();
   const { date, startTime, endTime, attendees, equipment, preferredFloor } = reservationFilter;
@@ -49,11 +50,11 @@ export function ReservableRoomList() {
 
   const handleBook = async () => {
     if (!selectedRoomId) {
-      navigate('/booking', { state: '회의실을 선택해주세요.', replace: true });
+      navigate(`/booking${search}`, { state: '회의실을 선택해주세요.', replace: true });
       return;
     }
     if (validationResult.type === 'error') {
-      navigate('/booking', { state: validationResult.message, replace: true });
+      navigate(`/booking${search}`, { state: validationResult.message, replace: true });
       return;
     }
 
@@ -73,7 +74,7 @@ export function ReservableRoomList() {
       }
 
       const errResult = result as { message?: string };
-      navigate('/booking', { state: errResult.message ?? '예약에 실패했습니다.', replace: true });
+      navigate(`/booking${search}`, { state: errResult.message ?? '예약에 실패했습니다.', replace: true });
       setSelectedRoomId(null);
     } catch (err: unknown) {
       let serverMessage = '예약에 실패했습니다.';
@@ -81,7 +82,7 @@ export function ReservableRoomList() {
         const data = err.response?.data as { message?: string } | undefined;
         serverMessage = data?.message ?? serverMessage;
       }
-      navigate('/booking', { state: serverMessage, replace: true });
+      navigate(`/booking${search}`, { state: serverMessage, replace: true });
       setSelectedRoomId(null);
     }
   };

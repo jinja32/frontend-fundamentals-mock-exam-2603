@@ -1,8 +1,8 @@
 import { css } from '@emotion/react';
 import { Spacing, Text } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
-import { formatDate } from 'utils/date';
 import { useReservationDateString } from '../hooks/useReservationDateString';
+import { formatDate } from 'utils/format';
 
 export function ReservationStatusDatePicker() {
   const [dateString, setDateString] = useReservationDateString();

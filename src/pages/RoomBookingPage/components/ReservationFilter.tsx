@@ -3,11 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Spacing, Text, Select } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
 import { getRooms } from 'pages/remotes';
-import { formatDate } from 'utils/date';
 import { ALL_EQUIPMENT, EQUIPMENT_LABELS } from 'constants/equipment';
 import { TIME_SLOTS } from 'constants/time';
 import { useReservationFilter } from '../hooks/useReservationFilter';
 import { useSelectedRoomId } from '../hooks/useSelectedRoomId';
+import { formatDate } from 'utils/format';
 
 export function ReservationFilter() {
   return (

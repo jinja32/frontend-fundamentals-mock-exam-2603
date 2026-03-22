@@ -1,5 +1,5 @@
-import { formatDate } from 'utils/date';
 import { ArrayParam, NumberParam, StringParam, useQueryParams, withDefault } from 'use-query-params';
+import { formatDate } from 'utils/format';
 
 export interface ReservationFilter {
   date: string;
@@ -49,48 +49,6 @@ export function useReservationFilter() {
 
   return [reservationFilter, setReservationFilter] as const;
 }
-
-// export function useReservationFilter2() {
-//   const [searchParams, setSearchParams] = useSearchParams();
-
-//   const reservationFilter: ReservationFilter = {
-//     date: searchParams.get(SEARCH_PARAM_KEYS.date) || formatDate(new Date()),
-//     startTime: searchParams.get(SEARCH_PARAM_KEYS.startTime) || '',
-//     endTime: searchParams.get(SEARCH_PARAM_KEYS.endTime) || '',
-//     attendees: Number(searchParams.get(SEARCH_PARAM_KEYS.attendees)) || 1,
-//     equipment: searchParams.get(SEARCH_PARAM_KEYS.equipment)?.split(',').filter(Boolean) || [],
-//     preferredFloor: searchParams.get(SEARCH_PARAM_KEYS.preferredFloor)
-//       ? Number(searchParams.get(SEARCH_PARAM_KEYS.preferredFloor))
-//       : null,
-//   };
-//   function setReservationFilter(newReservationFilter: Partial<ReservationFilter>) {
-//     setSearchParams(prev => {
-//       const newSearchParams = new URLSearchParams(prev);
-//       // 필터가 변경되면 선택된 회의실 ID도 초기화해야 한다.
-//       newSearchParams.delete(SELECTED_ROOM_ID_SEARCH_PARAM_KEY);
-
-//       Object.entries(newReservationFilter).forEach(([key, value]) => {
-//         const searchParamKey = SEARCH_PARAM_KEYS[key as keyof typeof SEARCH_PARAM_KEYS];
-
-//         if (value === null || value === undefined || value === '') {
-//           newSearchParams.delete(searchParamKey);
-//         } else if (Array.isArray(value)) {
-//           if (value.length === 0) {
-//             newSearchParams.delete(searchParamKey);
-//           } else {
-//             newSearchParams.set(searchParamKey, value.join(','));
-//           }
-//         } else {
-//           newSearchParams.set(searchParamKey, String(value));
-//         }
-//       });
-
-//       return newSearchParams;
-//     });
-//   }
-
-//   return [reservationFilter, setReservationFilter] as const;
-// }
 
 const SEARCH_PARAM_KEYS = {
   date: 'date',

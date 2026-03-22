@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { formatDate } from 'utils/date';
+import { formatDate } from 'utils/format';
 
 export function useReservationDateString() {
   const [searchParams, setSearchParams] = useSearchParams();

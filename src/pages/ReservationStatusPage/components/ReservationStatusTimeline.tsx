@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
-import { useState } from 'react';
 import { Spacing, Text } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
-import { getRooms, getReservations, Room } from 'pages/remotes';
+import { getRooms, getReservations, Room, Reservation } from 'pages/remotes';
 import { useQuery } from '@tanstack/react-query';
 import { useReservationDateString } from '../hooks/useReservationDateString';
 import { EQUIPMENT_LABELS } from 'constants/equipment';
 import { TIME_SLOTS } from 'constants/time';
+import { useActiveReservationId } from '../hooks/useActiveReservationId';
 
 const HOUR_LABELS = TIME_SLOTS.filter(t => t.endsWith(':00'));
 const TIMELINE_START = 9;
@@ -20,7 +20,6 @@ function timeToMinutes(time: string): number {
 
 export function ReservationStatusTimeline() {
   const [dateString] = useReservationDateString();
-  const [activeReservation, setActiveReservation] = useState<string | null>(null);
 
   const { data: rooms = [] } = useQuery(['rooms'], getRooms);
 
@@ -47,13 +46,7 @@ export function ReservationStatusTimeline() {
 
         {/* 회의실별 타임라인 */}
         {rooms.map((room: Room) => (
-          <TimelineRow
-            key={room.id}
-            room={room}
-            date={dateString}
-            isActive={activeReservation === room.id}
-            setActiveReservation={setActiveReservation}
-          />
+          <TimelineRow key={room.id} room={room} date={dateString} />
         ))}
       </div>
     </div>
@@ -108,17 +101,7 @@ function TimelineHeader() {
   );
 }
 
-function TimelineRow({
-  room,
-  date,
-  isActive,
-  setActiveReservation,
-}: {
-  room: Room;
-  date: string;
-  isActive: boolean;
-  setActiveReservation: React.Dispatch<React.SetStateAction<string | null>>;
-}) {
+function TimelineRow({ room, date }: { room: Room; date: string }) {
   const { data: reservations = [] } = useQuery(['reservations', date], () => getReservations(date), {
     enabled: !!date,
   });
@@ -164,72 +147,78 @@ function TimelineRow({
           overflow: visible;
         `}
       >
-        {roomReservations.map(
-          (res: { id: string; start: string; end: string; attendees: number; equipment: string[] }) => {
-            const left = (timeToMinutes(res.start) / TOTAL_MINUTES) * 100;
-            const width = ((timeToMinutes(res.end) - timeToMinutes(res.start)) / TOTAL_MINUTES) * 100;
-
-            return (
-              <div
-                key={res.id}
-                css={css`
-                  position: absolute;
-                  left: ${left}%;
-                  width: ${width}%;
-                  height: 100%;
-                `}
-              >
-                <div
-                  role="button"
-                  aria-label={`${room.name} ${res.start}-${res.end} 예약 상세`}
-                  onClick={() => setActiveReservation(isActive ? null : res.id)}
-                  css={css`
-                    width: 100%;
-                    height: 100%;
-                    background: ${colors.blue400};
-                    border-radius: 4px;
-                    opacity: ${isActive ? 1 : 0.75};
-                    cursor: pointer;
-                    transition: opacity 0.15s;
-                    &:hover {
-                      opacity: 1;
-                    }
-                  `}
-                />
-                {isActive && (
-                  <div
-                    role="tooltip"
-                    css={css`
-                      position: absolute;
-                      top: 100%;
-                      left: 50%;
-                      transform: translateX(-50%);
-                      margin-top: 6px;
-                      background: ${colors.grey900};
-                      color: ${colors.white};
-                      padding: 8px 12px;
-                      border-radius: 8px;
-                      font-size: 12px;
-                      white-space: nowrap;
-                      z-index: 10;
-                      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-                      line-height: 1.6;
-                    `}
-                  >
-                    <div>
-                      {res.start} ~ {res.end}
-                    </div>
-                    <div>{res.attendees}명</div>
-                    {res.equipment.length > 0 && (
-                      <div>{res.equipment.map((e: string) => EQUIPMENT_LABELS[e]).join(', ')}</div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          }
-        )}
+        {roomReservations.map(reservation => (
+          <ReservedSection key={reservation.id} room={room} reservation={reservation} />
+        ))}
       </div>
+    </div>
+  );
+}
+
+function ReservedSection({ room, reservation }: { room: Room; reservation: Reservation }) {
+  const [activeReservationId, setActiveReservationId] = useActiveReservationId();
+
+  const isActive = activeReservationId === reservation.id;
+
+  const left = (timeToMinutes(reservation.start) / TOTAL_MINUTES) * 100;
+  const width = ((timeToMinutes(reservation.end) - timeToMinutes(reservation.start)) / TOTAL_MINUTES) * 100;
+
+  return (
+    <div
+      key={reservation.id}
+      css={css`
+        position: absolute;
+        left: ${left}%;
+        width: ${width}%;
+        height: 100%;
+      `}
+    >
+      <div
+        role="button"
+        aria-label={`${room.name} ${reservation.start}-${reservation.end} 예약 상세`}
+        onClick={() => setActiveReservationId(isActive ? null : reservation.id)}
+        css={css`
+          width: 100%;
+          height: 100%;
+          background: ${colors.blue400};
+          border-radius: 4px;
+          opacity: ${isActive ? 1 : 0.75};
+          cursor: pointer;
+          transition: opacity 0.15s;
+          &:hover {
+            opacity: 1;
+          }
+        `}
+      />
+      {isActive && (
+        <div
+          role="tooltip"
+          css={css`
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 6px;
+            background: ${colors.grey900};
+            color: ${colors.white};
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            line-height: 1.6;
+          `}
+        >
+          <div>
+            {reservation.start} ~ {reservation.end}
+          </div>
+          <div>{reservation.attendees}명</div>
+          {reservation.equipment.length > 0 && (
+            <div>{reservation.equipment.map((e: string) => EQUIPMENT_LABELS[e]).join(', ')}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
