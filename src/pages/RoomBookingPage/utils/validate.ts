@@ -1,3 +1,4 @@
+import { Room } from 'pages/remotes';
 import { ReservationFilter } from '../hooks/useReservationFilter';
 
 export function validateReservationFilter(
@@ -18,4 +19,19 @@ export function validateReservationFilter(
   }
 
   return { type: 'success' };
+}
+
+export function validateRoomByReservationFilter(room: Room, reservationFilter: ReservationFilter) {
+  const { attendees, equipment, preferredFloor } = reservationFilter;
+
+  const isCapacityValid = room.capacity >= attendees;
+  if (!isCapacityValid) return false;
+
+  const isEquipmentValid = equipment.every(eq => room.equipment.includes(eq));
+  if (!isEquipmentValid) return false;
+
+  const isPreferredFloorValid = preferredFloor === null || room.floor === preferredFloor;
+  if (!isPreferredFloorValid) return false;
+
+  return true;
 }

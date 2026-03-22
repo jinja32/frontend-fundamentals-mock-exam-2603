@@ -8,7 +8,7 @@ import axios from 'axios';
 import { EQUIPMENT_LABELS } from 'constants/equipment';
 import { useReservationFilter } from '../hooks/useReservationFilter';
 import { useSelectedRoomId } from '../hooks/useSelectedRoomId';
-import { validateReservationFilter } from '../utils/validate';
+import { validateReservationFilter, validateRoomByReservationFilter } from '../utils/validate';
 
 export function ReservableRoomList() {
   const navigate = useNavigate();
@@ -38,22 +38,14 @@ export function ReservableRoomList() {
   const validationResult = validateReservationFilter(reservationFilter);
   const isFilterComplete = validationResult.type === 'success';
 
+  const timeFilteredReservationIds = reservations
+    .filter(reservation => reservation.date === date && reservation.start < endTime && reservation.end > startTime)
+    .map(room => room.id);
+
   const availableRooms = rooms
-    .filter((room: { id: string; capacity: number; equipment: string[]; floor: number }) => {
-      if (room.capacity < attendees) return false;
-      if (!equipment.every(eq => room.equipment.includes(eq))) return false;
-      if (preferredFloor !== null && room.floor !== preferredFloor) return false;
-      const hasConflict = reservations.some(
-        (r: { roomId: string; date: string; start: string; end: string }) =>
-          r.roomId === room.id && r.date === date && r.start < endTime && r.end > startTime
-      );
-      if (hasConflict) return false;
-      return true;
-    })
-    .sort((a: { floor: number; name: string }, b: { floor: number; name: string }) => {
-      if (a.floor !== b.floor) return a.floor - b.floor;
-      return a.name.localeCompare(b.name);
-    });
+    .filter(room => validateRoomByReservationFilter(room, reservationFilter))
+    .filter(room => !timeFilteredReservationIds.includes(room.id))
+    .sort((a, b) => (a.floor === b.floor ? a.name.localeCompare(b.name) : a.floor - b.floor));
 
   const handleBook = async () => {
     if (!selectedRoomId) {
