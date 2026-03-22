@@ -11,47 +11,51 @@ import { formatDate } from 'utils/format';
 
 export function ReservationFilter() {
   return (
-    <div
-      css={css`
-        padding: 0 24px;
-      `}
-    >
-      <Text typography="t5" fontWeight="bold" color={colors.grey900}>
-        예약 조건
-      </Text>
-      <Spacing size={16} />
-
-      {/* 날짜 */}
-      <SelectDate />
-      <Spacing size={14} />
-
-      {/* 시간 */}
+    <>
       <div
         css={css`
-          display: flex;
-          gap: 12px;
+          padding: 0 24px;
         `}
       >
-        <SelectStartTime />
-        <SelectEndTime />
-      </div>
-      <Spacing size={14} />
+        <Text typography="t5" fontWeight="bold" color={colors.grey900}>
+          예약 조건
+        </Text>
+        <Spacing size={16} />
 
-      {/* 참석 인원 + 선호 층 */}
-      <div
-        css={css`
-          display: flex;
-          gap: 12px;
-        `}
-      >
-        <SelectAttendees />
-        <SelectPreferredFloor />
-      </div>
-      <Spacing size={14} />
+        {/* 날짜 */}
+        <SelectDate />
+        <Spacing size={14} />
 
-      {/* 장비 */}
-      <SelectEquipment />
-    </div>
+        {/* 시간 */}
+        <div
+          css={css`
+            display: flex;
+            gap: 12px;
+          `}
+        >
+          <SelectStartTime />
+          <SelectEndTime />
+        </div>
+        <Spacing size={14} />
+
+        {/* 참석 인원 + 선호 층 */}
+        <div
+          css={css`
+            display: flex;
+            gap: 12px;
+          `}
+        >
+          <SelectAttendees />
+          <SelectPreferredFloor />
+        </div>
+        <Spacing size={14} />
+
+        {/* 장비 */}
+        <SelectEquipment />
+      </div>
+
+      <ErrorMessage />
+    </>
   );
 }
 
@@ -311,6 +315,34 @@ function SelectEquipment() {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function ErrorMessage() {
+  const [reservationFilter] = useReservationFilter();
+  const { startTime, endTime } = reservationFilter;
+
+  const validationError = endTime <= startTime ? '종료 시간은 시작 시간보다 늦어야 합니다.' : null;
+
+  if (!validationError) return null;
+
+  return (
+    <div
+      css={css`
+        padding: 0 24px;
+      `}
+    >
+      <Spacing size={8} />
+      <span
+        css={css`
+          color: ${colors.red500};
+          font-size: 14px;
+        `}
+        role="alert"
+      >
+        {validationError}
+      </span>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, afterEach, vi } from 'vitest';
+import { QueryParamProvider } from 'use-query-params';
+import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';
 import App from './App';
 import * as remotes from 'pages/remotes';
 
@@ -13,7 +15,9 @@ describe('예약 현황 페이지', () => {
   function renderApp(route = '/') {
     return render(
       <MemoryRouter initialEntries={[route]}>
-        <App />
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <App />
+        </QueryParamProvider>
       </MemoryRouter>
     );
   }
@@ -130,7 +134,9 @@ describe('예약하기 페이지', () => {
   function renderApp(route = '/booking') {
     return render(
       <MemoryRouter initialEntries={[route]}>
-        <App />
+        <QueryParamProvider adapter={ReactRouter6Adapter}>
+          <App />
+        </QueryParamProvider>
       </MemoryRouter>
     );
   }

@@ -4,7 +4,7 @@ import { formatDate } from 'utils/format';
 export function useReservationDateString() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const dateString = searchParams.get(SEARCH_PARAM_KEY) || formatDate(new Date());
+  const dateString = searchParams.get(SEARCH_PARAM_KEY) ?? formatDate(new Date());
   const setDateString = (newDateString: string) => {
     setSearchParams(prev => ({ ...Object.fromEntries(prev), [SEARCH_PARAM_KEY]: newDateString }));
   };
