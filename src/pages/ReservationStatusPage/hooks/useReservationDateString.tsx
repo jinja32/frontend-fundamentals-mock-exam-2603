@@ -6,7 +6,7 @@ export function useReservationDateString() {
 
   const dateString = searchParams.get(SEARCH_PARAM_KEY) || formatDate(new Date());
   const setDateString = (newDateString: string) => {
-    setSearchParams({ ...Object.fromEntries(searchParams), [SEARCH_PARAM_KEY]: newDateString });
+    setSearchParams(prev => ({ ...Object.fromEntries(prev), [SEARCH_PARAM_KEY]: newDateString }));
   };
 
   return [dateString, setDateString] as const;

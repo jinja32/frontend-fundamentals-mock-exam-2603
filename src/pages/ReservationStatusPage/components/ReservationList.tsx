@@ -2,15 +2,9 @@ import { css } from '@emotion/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Spacing, Button, Text, ListRow } from '_tosslib/components';
 import { colors } from '_tosslib/constants/colors';
+import { EQUIPMENT_LABELS } from 'constants/equipment';
 import { cancelReservation, getMyReservations, getRooms, Reservation } from 'pages/remotes';
 import { useNavigate } from 'react-router-dom';
-
-const EQUIPMENT_LABELS: Record<string, string> = {
-  tv: 'TV',
-  whiteboard: '화이트보드',
-  video: '화상장비',
-  speaker: '스피커',
-};
 
 export function ReservationList() {
   const { data: myReservationList = [] } = useQuery(['myReservations'], getMyReservations);
@@ -116,9 +110,9 @@ function MyReservationListItem({ reservation }: { reservation: Reservation }) {
               if (window.confirm('정말 취소하시겠습니까?')) {
                 try {
                   await cancelMutation.mutateAsync(reservation.id);
-                  navigate('/', { state: { type: 'success', text: '예약이 취소되었습니다.' } });
+                  navigate('/', { state: { type: 'success', text: '예약이 취소되었습니다.' }, replace: true });
                 } catch {
-                  navigate('/', { state: { type: 'error', text: '취소에 실패했습니다.' } });
+                  navigate('/', { state: { type: 'error', text: '취소에 실패했습니다.' }, replace: true });
                 }
               }
             }}
