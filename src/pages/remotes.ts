@@ -12,10 +12,18 @@ export function getRooms() {
   return http.get<Room[]>('/api/rooms');
 }
 
+export interface Reservation {
+  id: string;
+  roomId: string;
+  date: string;
+  start: string;
+  end: string;
+  attendees: number;
+  equipment: string[];
+}
+
 export function getReservations(date: string) {
-  return http.get<
-    { id: string; roomId: string; date: string; start: string; end: string; attendees: number; equipment: string[] }[]
-  >(`/api/reservations?date=${date}`);
+  return http.get<Reservation[]>(`/api/reservations?date=${date}`);
 }
 
 export function createReservation(data: {
@@ -26,20 +34,10 @@ export function createReservation(data: {
   attendees: number;
   equipment: string[];
 }) {
-  return http.post<typeof data, { ok: boolean; reservation?: unknown; code?: string; message?: string }>(
+  return http.post<typeof data, { ok: boolean; reservation?: Reservation; code?: string; message?: string }>(
     '/api/reservations',
     data
   );
-}
-
-export interface Reservation {
-  id: string;
-  roomId: string;
-  date: string;
-  start: string;
-  end: string;
-  attendees: number;
-  equipment: string[];
 }
 
 export function getMyReservations() {
